@@ -8,7 +8,8 @@ const DEFAULT_STATE = {
 
 export default createReducer(
   {
-    [actions.increment]: (state) => ({ ...state, counter: state.counter++ })
+    [actions.increment]: (state) => ({ ...state, counter: state.counter + 1 }),
+    [actions.decrement]: (state) => ({ ...state, counter: state.counter - 1 })
   },
   DEFAULT_STATE
 );
