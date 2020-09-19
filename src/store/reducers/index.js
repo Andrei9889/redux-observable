@@ -1,15 +1,7 @@
-import { createReducer } from 'redux-act';
+import counter from './counter';
+import fakeData from './fakeData';
 
-import * as actions from '../actions';
-
-const DEFAULT_STATE = {
-  counter: 0
+export default {
+  counter,
+  fakeData,
 };
-
-export default createReducer(
-  {
-    [actions.increment]: (state) => ({ ...state, counter: state.counter + 1 }),
-    [actions.decrement]: (state) => ({ ...state, counter: state.counter - 1 })
-  },
-  DEFAULT_STATE
-);
