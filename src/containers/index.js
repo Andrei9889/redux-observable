@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { connect } from "react-redux";
 import { runIncrement, runDecrement, getFakeData } from '../store/actions';
 
@@ -23,6 +23,14 @@ const styles = {
 };
 
 const Page = ({ counter, fakeData, increment, decrement, getNewData }) => {
+
+  const getNewDataCallback = useCallback(
+    () => {
+      getNewData(counter);
+    },
+    [getNewData, counter],
+  );
+
   return (
     <div style={styles.container}>
       <div>Counter: {counter}</div>
@@ -31,8 +39,8 @@ const Page = ({ counter, fakeData, increment, decrement, getNewData }) => {
         <button onClick={decrement}>Decrement</button>
       </div>
       <div style={styles.fakeDataContainer}>
-        <div>{JSON.stringify(fakeData)}</div>
-        <button onClick={getNewData}>Get new data</button>
+        <div>{JSON.stringify(fakeData.data)}</div>
+        <button onClick={getNewDataCallback}>Get new data</button>
       </div>
     </div>
   );
@@ -44,7 +52,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     increment: () => dispatch(runIncrement()),
     decrement: () => dispatch(runDecrement()),
-    getNewData: () => dispatch(getFakeData()),
+    getNewData: value => dispatch(getFakeData(value)),
   };
 };
 

@@ -3,7 +3,7 @@ import { createReducer } from 'redux-act';
 import * as actions from '../actions';
 
 const DEFAULT_STATE = {
-  counter: 0
+  counter: 1
 };
 
 export default createReducer(
