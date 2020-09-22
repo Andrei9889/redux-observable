@@ -1,24 +1,48 @@
-import React from 'react';
-import { render } from '@testing-library/react';
+import React from "react";
+import { render } from "@testing-library/react";
 
-import { ActionsObservable } from 'redux-observable';
-import { ofType } from "redux-observable";
-import { startWith, map, catchError, mergeMap, toArray } from "rxjs/operators";
-import { of } from 'rxjs';
-import {
-  getFakeDataEpic
-} from './store/epics/fakeDataEpic';
+import { toArray } from "rxjs/operators";
+import { of } from "rxjs";
 
-import {
-  fakeDataLoading,
-  fakeDataRecieved,
-  fakeDataErrorRecieved,
-  getFakeData
-} from "./store/actions";
+import { getFakeDataEpic } from "./store/epics/fakeDataEpic";
 
-import App from './App';
+import App from "./App";
 
-test('Render initial page with buttons', () => {
+it("Test epic", (done) => {
+  const action$ = of({ type: "GET_FAKE_DATA", payload: 1 });
+  const mockResponse = {
+    userId: 1,
+    id: 1,
+    title: "delectus aut autem",
+    completed: false,
+  };
+  const state$ = null;
+
+  const dependencies = {
+    getJSON: (url) => of(mockResponse),
+  };
+
+  const result$ = getFakeDataEpic(action$, state$, dependencies).pipe(
+    toArray()
+  );
+
+  result$.subscribe((actions) => {
+    const expected = {
+      type: 'FAKE_DATA_RECIEVED',
+      payload: mockResponse,
+      error: false
+    }
+    const actual = actions.find(action => action.type === 'FAKE_DATA_RECIEVED')
+    if(JSON.stringify(actual) === JSON.stringify(expected)) {
+      done()
+    } else done({
+      expexted: JSON.stringify(expected),
+      actual: JSON.stringify(actual)
+    })
+  });
+});
+
+test("Render initial page with buttons", () => {
   const { getByText } = render(<App />);
   const incrementElement = getByText(/Increment/);
   const decrementElement = getByText(/Decrement/);
@@ -26,27 +50,4 @@ test('Render initial page with buttons', () => {
   expect(incrementElement).toBeInTheDocument();
   expect(decrementElement).toBeInTheDocument();
   expect(getNewDataElement).toBeInTheDocument();
-});
-
-it('Test epic', (done) => {
-  const action$ = of({ type: 'GET_FAKE_DATA', payload: 1 });
-  const mockResponse = {"userId":1,"id":1,"title":"delectus aut autem","completed":false};
-  const state$ = null;
-
-  const dependencies = {
-    getJSON: url => of(mockResponse)
-  };
-
-  const result$ = getFakeDataEpic(action$, state$, dependencies).pipe(
-    toArray() // buffers output until your Epic naturally completes()
-  );
-
-  result$.subscribe(actions => {
-    console.log(actions)
-    
-    // assertDeepEqual(actions, [{
-    //   type: 'FAKE_DATA_RECIEVED',
-    //   payload: mockResponse
-    // }]);
-  });
 });
